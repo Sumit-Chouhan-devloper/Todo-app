@@ -3,11 +3,11 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
 const TodoList = () => {
-    type StatusValue = "Loading" | "Success" | "Error";
-    const [status, setStatus] = useState<StatusValue>("Loading");
+  type StatusValue = "Loading" | "Success" | "Error";
+  const [status, setStatus] = useState<StatusValue>("Loading");
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
-  
+
   interface TodoItem {
     id: string;
     title: string;
@@ -22,7 +22,6 @@ const TodoList = () => {
     querySnapshot.forEach((doc) => {
       demoArray.push({ ...doc.data(), id: doc.id } as TodoItem);
     });
-
     setNewArray(demoArray);
     setStatus("Success");
   };
@@ -38,6 +37,7 @@ const TodoList = () => {
         title: inputValue,
         isCompleted: false,
       });
+      getData();
       setInputValue("");
     }
     setStatus("Success");
@@ -45,7 +45,7 @@ const TodoList = () => {
   return (
     <>
       <div className="flex h-screen justify-center items-center">
-      {status === "Loading" && (
+        {status === "Loading" && (
           <div className="backdrop-blur z-10 fixed text-xl text-slate-400 w-full min-h-screen flex justify-center items-center">
             ...Loading
           </div>
@@ -57,7 +57,11 @@ const TodoList = () => {
           <p className="ff_inter font-medium text-xs text-slate-400 pb-2">
             Enter Todo
           </p>
-          {error && <p className="text-red-500 font-semibold text-sm ff_inter absolute right-[5%] top-[18%]">{error}</p>}
+          {error && (
+            <p className="text-red-500 font-semibold text-sm ff_inter absolute right-[5%] top-[18%]">
+              {error}
+            </p>
+          )}
           <div className="flex justify-between items-center ps-6 py-1 pe-1 border hover:border-blue-500  border-slate-200 transition-all  rounded-lg mb-2">
             <input
               value={inputValue}
@@ -76,7 +80,7 @@ const TodoList = () => {
               Add
             </button>
           </div>
-          
+
           <div className="border border-slate-200 rounded-lg overflow-hidden">
             {newArray.map((item, index) => (
               <TodoListItem
