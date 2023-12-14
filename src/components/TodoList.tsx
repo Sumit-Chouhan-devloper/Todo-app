@@ -1,7 +1,16 @@
+// TodoList.js
 import TodoListItem from "./TodoListItem";
-import { collection, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
+
 const TodoList = () => {
   type StatusValue = "Loading" | "Success" | "Error";
   const [status, setStatus] = useState<StatusValue>("Loading");
@@ -17,31 +26,78 @@ const TodoList = () => {
 
   const getData = async () => {
     setStatus("Loading");
-    const querySnapshot = await getDocs(collection(db, "latest-todo"));
-    const demoArray: TodoItem[] = [];
-    querySnapshot.forEach((doc) => {
-      demoArray.push({ ...doc.data(), id: doc.id } as TodoItem);
-    });
-    setNewArray(demoArray);
-    setStatus("Success");
+    try {
+      const querySnapshot = await getDocs(collection(db, "latest-todo"));
+      const demoArray: TodoItem[] = [];
+      querySnapshot.forEach((doc) => {
+        demoArray.push({ ...doc.data(), id: doc.id } as TodoItem);
+      });
+      setNewArray(demoArray);
+      setStatus("Success");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setStatus("Error");
+    }
   };
+
   useEffect(() => {
     getData();
   }, []);
+
   const setData = async () => {
     setStatus("Loading");
     if (inputValue.length === 0) {
-      setError("Input value cannot be empty."); // Set an error message
+      setError("Input value cannot be empty.");
+      setStatus("Error");
     } else {
-      await addDoc(collection(db, "latest-todo"), {
-        title: inputValue,
-        isCompleted: false,
+      try {
+        await addDoc(collection(db, "latest-todo"), {
+          title: inputValue,
+          isCompleted: false,
+        });
+        getData();
+        setInputValue("");
+        setStatus("Success");
+      } catch (error) {
+        console.error("Error adding todo:", error);
+        setStatus("Error");
+      }
+    }
+  };
+
+  const handleDeleteTodo = async (id: string) => {
+    setStatus("Loading");
+    try {
+      await deleteDoc(doc(db, "latest-todo", id));
+      getData();
+      setStatus("Success");
+    } catch (error) {
+      console.error("Error deleting todo:", error);
+      setStatus("Error");
+    }
+  };
+
+  const handleCompleteTodo = async (id: string, isCompleted: boolean) => {
+    setStatus("Loading");
+
+    try {
+      // Perform the actual update logic
+      await updateDoc(doc(db, "latest-todo", id), { isCompleted });
+
+      // Update the UI by toggling the isCompleted locally
+      setNewArray((prevArray) => {
+        return prevArray.map((item) =>
+          item.id === id ? { ...item, isCompleted } : item
+        );
       });
       getData();
-      setInputValue("");
+      setStatus("Success");
+    } catch (error) {
+      console.error("Error updating todo:", error);
+      setStatus("Error");
     }
-    setStatus("Success");
   };
+
   return (
     <>
       <div className="flex h-screen justify-center items-center">
@@ -57,13 +113,13 @@ const TodoList = () => {
           <p className="ff_inter font-medium text-xs text-slate-400 pb-2">
             Enter Todo
           </p>
-          
+
           <div className="flex justify-between items-center ps-6 py-1 pe-1 border hover:border-blue-500  border-slate-200 transition-all  rounded-lg mb-2 relative">
-          {error && (
-            <p className="text-red-500 font-semibold text-sm ff_inter absolute right-0 top-[-45%]">
-              {error}
-            </p>
-          )}
+            {error && (
+              <p className="text-red-500 font-semibold text-sm ff_inter absolute right-0 top-[-45%]">
+                {error}
+              </p>
+            )}
             <input
               value={inputValue}
               onChange={(e) => {
@@ -89,6 +145,8 @@ const TodoList = () => {
                 title={item.title}
                 isCompleted={item.isCompleted}
                 id={item.id}
+                onDelete={handleDeleteTodo}
+                onComplete={handleCompleteTodo}
               />
             ))}
           </div>
