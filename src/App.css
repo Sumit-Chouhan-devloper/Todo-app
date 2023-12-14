@@ -1,0 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+
+/* todo css */
+.ff_inter {
+  font-family: "inter", "sans";
+}
+.border_remove:not(:last-child) {
+  border-bottom: 1px solid #E2E8F0;
+}
