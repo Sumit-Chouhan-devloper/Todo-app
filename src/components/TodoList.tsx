@@ -50,19 +50,20 @@ const TodoList = () => {
             ...Loading
           </div>
         )}
-        <div className="px-6 pt-6 pb-5 border border-slate-200 rounded-lg w-full mx-3 sm:!w-[480px] relative">
+        <div className="px-6 pt-6 pb-5 border border-slate-200 rounded-lg w-full mx-3 sm:!w-[480px]">
           <h2 className="font-semibold ff_inter text-2xl text-center pb-7">
             Todos
           </h2>
           <p className="ff_inter font-medium text-xs text-slate-400 pb-2">
             Enter Todo
           </p>
+          
+          <div className="flex justify-between items-center ps-6 py-1 pe-1 border hover:border-blue-500  border-slate-200 transition-all  rounded-lg mb-2 relative">
           {error && (
-            <p className="text-red-500 font-semibold text-sm ff_inter absolute right-[5%] top-[18%]">
+            <p className="text-red-500 font-semibold text-sm ff_inter absolute right-0 top-[-45%]">
               {error}
             </p>
           )}
-          <div className="flex justify-between items-center ps-6 py-1 pe-1 border hover:border-blue-500  border-slate-200 transition-all  rounded-lg mb-2">
             <input
               value={inputValue}
               onChange={(e) => {
