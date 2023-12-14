@@ -30,6 +30,7 @@ const TodoList = () => {
     getData();
   }, []);
   const setData = async () => {
+    setStatus("Loading");
     if (inputValue.length === 0) {
       setError("Input value cannot be empty."); // Set an error message
     } else {
@@ -39,6 +40,7 @@ const TodoList = () => {
       });
       setInputValue("");
     }
+    setStatus("Success");
   };
   return (
     <>
