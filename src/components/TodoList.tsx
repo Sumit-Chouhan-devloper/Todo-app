@@ -1,5 +1,6 @@
-// TodoList.js
+
 import TodoListItem from "./TodoListItem";
+// import from firebase for manage data
 import {
   collection,
   getDocs,
@@ -12,18 +13,20 @@ import { db } from "../../firebase/firebase";
 import { useEffect, useState } from "react";
 
 const TodoList = () => {
+    // states we need
   type StatusValue = "Loading" | "Success" | "Error";
   const [status, setStatus] = useState<StatusValue>("Loading");
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
-
+//   for data type decleare
   interface TodoItem {
     id: string;
     title: string;
     isCompleted: boolean;
   }
+//   empty array for store get push data
   const [newArray, setNewArray] = useState<TodoItem[]>([]);
-
+// function for get data in firebase firestore
   const getData = async () => {
     setStatus("Loading");
     try {
@@ -43,7 +46,7 @@ const TodoList = () => {
   useEffect(() => {
     getData();
   }, []);
-
+// function for add data when type any in input  with error massage
   const setData = async () => {
     setStatus("Loading");
     if (inputValue.length === 0) {
@@ -64,7 +67,7 @@ const TodoList = () => {
       }
     }
   };
-
+// function for delet todo list item
   const handleDeleteTodo = async (id: string) => {
     setStatus("Loading");
     try {
@@ -76,15 +79,11 @@ const TodoList = () => {
       setStatus("Error");
     }
   };
-
+// function for complete and not complete 
   const handleCompleteTodo = async (id: string, isCompleted: boolean) => {
     setStatus("Loading");
-
     try {
-      // Perform the actual update logic
       await updateDoc(doc(db, "latest-todo", id), { isCompleted });
-
-      // Update the UI by toggling the isCompleted locally
       setNewArray((prevArray) => {
         return prevArray.map((item) =>
           item.id === id ? { ...item, isCompleted } : item
@@ -137,7 +136,6 @@ const TodoList = () => {
               Add
             </button>
           </div>
-
           <div className="border border-slate-200 rounded-lg overflow-hidden">
             {newArray.map((item, index) => (
               <TodoListItem
